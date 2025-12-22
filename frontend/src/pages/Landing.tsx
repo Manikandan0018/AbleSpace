@@ -6,12 +6,13 @@ import m3 from "../image/m3.jpg";
 import w1 from "../image/w1.jpg";
 import w2 from "../image/w2.jpg";
 import w3 from "../image/w3.jpg";
-
+import { useNavigate } from "react-router-dom";
 
 export default function LandingPage() {
   const men = [m1, m2, m3]
   const women = [w1, w2, w3]
-  
+  const navigate = useNavigate();
+
   return (
     <>
       <Header />
@@ -50,7 +51,10 @@ export default function LandingPage() {
               updates — all in one collaborative workspace.
             </p>
 
-            <button className="mt-8 rounded-lg bg-orange-500 px-8 py-3 text-lg font-semibold text-white hover:bg-orange-600 transition">
+            <button
+              onClick={() => navigate("/signup")}
+              className="mt-8 rounded-lg bg-orange-500 px-8 py-3 text-lg font-semibold text-white hover:bg-orange-600 transition"
+            >
               Get started free →
             </button>
 
@@ -131,7 +135,7 @@ export default function LandingPage() {
           </div>
         </section>
       </div>
-      <LegalFooter/>
+      <LegalFooter />
     </>
   );
 }
