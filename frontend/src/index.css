@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+html, body {
+  overflow-x: hidden;
+}
+
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
+}
+
+.animate-float {
+  animation: float 2.5s ease-in-out infinite;
+}
+.animate-float.delay-200 {
+  animation-delay: 0.2s;
+}
