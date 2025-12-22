@@ -13,7 +13,6 @@ export async function register(req: Request, res: Response) {
   res.json(user);
 }
 
-
 export async function login(req: Request, res: Response) {
   const { email, password } = req.body;
 
@@ -31,10 +30,20 @@ export async function login(req: Request, res: Response) {
     return res.status(401).json({ message: "Invalid credentials" });
   }
 
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string);
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, {
+    expiresIn: "7d",
+  });
 
-  res.cookie("token", token, { httpOnly: true }).json(user);
+  res
+    .cookie("token", token, {
+      httpOnly: true,
+      secure: true, // REQUIRED on HTTPS (Render/Vercel)
+      sameSite: "none", // REQUIRED for cross-domain cookies
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
+    .json(user);
 }
+
 
 
 
