@@ -4,12 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { socket } from "../socket";
 import Header from "../components/Header";
 import Toast from "../components/Toast";
-import logo from "../image/logo.jpeg"
+import logo from "../image/logo.jpeg";
 
 export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error";
@@ -19,6 +20,7 @@ export default function Signup() {
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
+    setLoading(true);
 
     try {
       await api.post("/auth/register", { name, email, password });
@@ -38,18 +40,35 @@ export default function Signup() {
         message: "Signup failed. Try again.",
         type: "error",
       });
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <>
       <Header />
+
       {toast && (
         <Toast
           message={toast.message}
           type={toast.type}
           onClose={() => setToast(null)}
         />
+      )}
+
+      {loading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl flex flex-col items-center">
+            <div className="relative w-16 h-16">
+              <div className="absolute inset-0 rounded-full border-4 border-purple-500 border-t-transparent animate-spin" />
+              <div className="absolute inset-2 rounded-full border-4 border-pink-500 border-b-transparent animate-spin" />
+            </div>
+            <p className="mt-5 text-gray-700 font-semibold">
+              Creating your account...
+            </p>
+          </div>
+        </div>
       )}
 
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 px-4">
@@ -95,8 +114,11 @@ export default function Signup() {
             required
           />
 
-          <button className="w-full py-3 rounded-lg bg-black text-white font-semibold hover:bg-gray-900 transition">
-            Sign up
+          <button
+            disabled={loading}
+            className="w-full py-3 rounded-lg bg-black text-white font-semibold hover:bg-gray-900 transition disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {loading ? "Creating..." : "Sign up"}
           </button>
 
           <p className="text-sm text-gray-600 mt-6 text-center">

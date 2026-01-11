@@ -9,6 +9,7 @@ import logo from "../image/logo.jpeg";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error";
@@ -18,6 +19,7 @@ export default function Login() {
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const res = await api.post("/auth/login", { email, password });
@@ -35,18 +37,35 @@ export default function Login() {
         message: "Invalid email or password",
         type: "error",
       });
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <>
       <Header />
+
       {toast && (
         <Toast
           message={toast.message}
           type={toast.type}
           onClose={() => setToast(null)}
         />
+      )}
+
+      {loading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl flex flex-col items-center">
+            <div className="relative w-16 h-16">
+              <div className="absolute inset-0 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" />
+              <div className="absolute inset-2 rounded-full border-4 border-purple-500 border-b-transparent animate-spin" />
+            </div>
+            <p className="mt-5 text-gray-700 font-semibold">
+              Signing you in...
+            </p>
+          </div>
+        </div>
       )}
 
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 px-4">
@@ -62,6 +81,7 @@ export default function Login() {
           <div className="flex justify-center">
             <img src={logo} alt="Logo" className="w-36" />
           </div>
+
           <h2 className="text-3xl mt-5 font-extrabold text-gray-900 mb-2">
             Welcome back
           </h2>
@@ -84,8 +104,11 @@ export default function Login() {
             required
           />
 
-          <button className="w-full py-3 rounded-lg bg-black text-white font-semibold hover:bg-gray-900 transition">
-            Login
+          <button
+            disabled={loading}
+            className="w-full py-3 rounded-lg bg-black text-white font-semibold hover:bg-gray-900 transition disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {loading ? "Logging in..." : "Login"}
           </button>
 
           <p className="text-sm text-gray-600 mt-6 text-center">
